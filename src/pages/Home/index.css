@@ -11,6 +11,25 @@
     color: #f2f2f2;
 }
 
+.search-result {
+    width: 400px;
+    padding: 16px 24px;
+    border-radius: 0 0 25px 25px;
+    border: 0;
+    outline: 0;
+    max-height: 300px;
+    overflow:hidden;
+
+    font-size: 16px;
+
+    background: #2d2f30;
+    color: #f2f2f2;
+}
+.search-result>div{
+    display: flex;
+    justify-content: space-between;
+}
+
 .logo {
     text-align: center;
     margin-bottom: 35px;
@@ -18,4 +37,15 @@
 
 .logo img {
     width: 200px;
+}
+
+.search-result-birth{
+    color: grey;
+    margin-top: -10px;
+    padding: 0;
+    font-size: 14px;
+}
+.search-result-gender{
+    color: grey;
+      text-transform: capitalize;
 }
