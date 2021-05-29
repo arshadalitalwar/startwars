@@ -1,0 +1,30 @@
+.listItem{
+    display: flex;
+    justify-content: space-between;
+    color:white;
+    cursor: pointer;
+    
+}
+.listItemSelect{
+    display: flex;
+    justify-content: space-between;
+    background-color:#eede25;
+    color:black;
+    cursor: pointer;
+}
+
+
+
+
+.search-result-birth{
+    color: grey;
+    margin-top: -10px;
+    padding: 0;
+    font-size: 14px;
+    margin-left: 10px;
+}
+.search-result-gender{
+    color: grey;
+      text-transform: capitalize;
+      margin: 10px;
+}

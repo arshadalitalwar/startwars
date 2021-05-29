@@ -1,62 +1,134 @@
-import React from 'react';
-import logo from './star-wars-logo.png';
-import './index.css';
+import React, { useEffect, useState } from "react";
+import logo from "./star-wars-logo.png";
+import searchLogo from "./search.png";
+import closeLogo from "./close.png";
+import loadingLogo from "./loading.png";
+import "./index.css";
 import axios from "axios";
-let temp={};
-let i=0;
+import { ListItems } from "../../components/ListItems/ListItems";
+import { List } from "../../components/List/List";
+import { useHistory } from "react-router-dom";
 function HomePage() {
-  const [data,setData]=React.useState([]);
- 
-  
-  const handleKeyDown=(e)=>{
-    console.log(e.keyCode)
-    if(e.keyCode==40){
-      console.log(document.getElementById(`a${i}`));
-      i++;
-    }
-    else{
-      i--;
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const [checkRef, setcheckRef] = useState(-1);
+  const [timer, setTimer] = useState(null);
+  const [search, setSearch] = useState("");
+  const history = useHistory();
 
+  //to select element by arrow keys
+  const handleKeyDown = (e) => {
+    if (e.keyCode === 40) {
+      if (checkRef === 3 || checkRef === data.length - 1) {
+        setcheckRef(0);
+      } else {
+        setcheckRef((prev) => prev + 1);
+      }
+    } else if (e.keyCode === 38) {
+      if (checkRef === 0) {
+        if (data.length >= 3) {
+          setcheckRef(3);
+        } else {
+          setcheckRef(data.length - 1);
+        }
+      } else {
+        setcheckRef((prev) => prev - 1);
+      }
     }
-  }
-  
-  const handleChange=(e)=>{
-    let value=e.target.value;
-    if(value){
-    if(temp[value]===undefined){
-     axios.get(`https://swapi.dev/api/people/?search=${e.target.value}`).then((el)=>{  
-       setData(el.data.results);
-       console.log(value)
-       temp[value]=el.data.results;
-     });
+  };
+
+  //handle search with optimize to call api
+  const handleChange = (e) => {
+    setcheckRef(-1);
+    let { value } = e.target;
+    setSearch(value);
+
+    if (timer) {
+      clearTimeout(timer);
     }
-    else{
-      setData(temp[e.target.value]);
+
+    let temp = setTimeout(() => {
+      if (value) {
+        setIsLoading(true);
+        axios
+          .get(`https://swapi.dev/api/people/?search=${value}`)
+          .then((el) => {
+            setData(el.data.results);
+            setIsLoading(false);
+          })
+          .catch(() => {
+            setIsLoading(false);
+          });
+        setTimer(null);
+      } else {
+        setData([]);
+      }
+    }, 500);
+    setTimer(temp);
+  };
+  useEffect(() => {
+    if (checkRef >= 0 && checkRef < data.length) {
+      setSearch(data[checkRef].name);
     }
-  }
-  else{
-    setData([]);
-  }
-  }
-  
+  }, [checkRef,data]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (search !== "") {
+      let searchValue = data.filter((e) => e.name === search);
+      if (searchValue.length > 0) {
+        let temp = searchValue[0].url.split("/");
+        history.push(`/person/${temp[temp.length - 2]}`);
+      } else {
+        history.push(`/notfound`);
+      }
+    }
+  };
   return (
     <div>
       <div className="logo">
         <img src={logo} alt="Star Wars Logo" />
       </div>
-      <input className="search-input" onKeyDown={handleKeyDown} style={data.length>0?{borderRadius:"25px 25px 0 0",borderBottom:"1px solid black"}:{}} placeholder="Search by name" onChange={handleChange}  />
-     {data.length>0 &&<div   className="search-result">
-      {data?.map((e,i)=><div key={i} id={`a${i}`}  style={{color:"white"}}>
-      <div>
-        <p>{e.name}</p>
-        <p className="search-result-birth">{e.birth_year}</p>
-      </div>
-      <div>
-      <p className="search-result-gender">{e.gender}</p>
-      </div></div>)
-      }
-      </div>
-      }
+      <form onSubmit={handleSubmit} className="form">
+        <input
+          className="search-input"
+          onKeyDown={handleKeyDown}
+          style={
+            data.length > 0
+              ? {
+                  borderRadius: "25px 25px 0 0",
+                  borderBottom: "1px solid black",
+                }
+              : {}
+          }
+          value={search}
+          placeholder="Search by name"
+          onChange={handleChange}
+        />
+        <div onClick={handleSubmit} className="searchLogo">
+          <img src={searchLogo} alt="search"></img>
+        </div>
+        {isLoading && (
+          <div className="loadingLogo">
+            <img src={loadingLogo} alt="search"></img>
+          </div>
+        )}
+        {search && (
+          <div
+            onClick={() => handleChange({ target: { value: "" } })}
+            className="closeLogo"
+          >
+            <img src={closeLogo} alt="close"></img>
+          </div>
+        )}
+      </form>
+      {data.length > 0 && (
+        <List>
+          {data?.map((e, i) => (
+            <ListItems key={i} {...e} checkRef={checkRef} i={i}></ListItems>
+          ))}
+        </List>
+      )}
     </div>
   );
 }
