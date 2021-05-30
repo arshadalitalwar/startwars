@@ -4,10 +4,10 @@ import "./ListItem.css";
 
 function ListItems({ checkRef = 0, i = 0, name, birth_year, gender, url }) {
   const history = useHistory();
-  
+
   const handleClick = (e) => {
     let temp = e.split("/");
-    history.push(`/person/${temp[temp.length - 2]}`);
+    history.push(`/character/${temp[temp.length - 2]}`);
   };
 
   return (

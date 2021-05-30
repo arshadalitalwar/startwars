@@ -7,7 +7,8 @@ import "./index.css";
 import axios from "axios";
 import { ListItems } from "../../components/ListItems/ListItems";
 import { List } from "../../components/List/List";
-import { useHistory } from "react-router-dom";
+import { useHistory } from "react-router";
+
 function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -78,7 +79,7 @@ function HomePage() {
       let searchValue = data.filter((e) => e.name === search);
       if (searchValue.length > 0) {
         let temp = searchValue[0].url.split("/");
-        history.push(`/person/${temp[temp.length - 2]}`);
+        history.push(`/character/${temp[temp.length - 2]}`);
       } else {
         history.push(`/notfound`);
       }

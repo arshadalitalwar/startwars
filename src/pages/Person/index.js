@@ -3,18 +3,28 @@ import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router";
 import "./index.css";
 
+const init={
+  name:"name",
+  gender:"gender",
+  birth_year:"BY",
+  height:"height"
+}
+
 function Person() {
-  let [data, setData] = useState({});
+  let [data, setData] = useState(init);
   let param = useParams();
   let history = useHistory();
 
   useEffect(() => {
-    axios.get(`https://swapi.dev/api/people/${param.id}`).then((e) => {
+    let {id}=param;
+    console.log(id);
+    axios.get(`https://swapi.dev/api/people/${id}/`).then((e) => {
       setData(e.data);
       console.log(e.data);
-     
+    }).catch((err)=>{
+      console.log(err);
     });
-  }, [param]);
+  }, []);
 
 
   return (
